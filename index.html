@@ -5,31 +5,30 @@
         <title>Async/Await</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
+          *:focus {
+            outline: none;
+          }
+
           body {
             background-color: #414141;
             color: white;
           }
-          *:active, *:focus {
-            outline: 0;
-          }
           article {
             display: flex;
+            margin: 30px;
           }
           .code {
             font-family: "Courier New", serif;
             font-weight: bold;
             flex-shrink: 0;
           }
-          .go, .hide {
-            font-size: 22px;
-            border: 0;
-            background: 0;
-            color: white;
-            width: 40px;
-            text-align: right;
-            cursor: pointer;
+          .highlighted {
+            border: 2px solid #fa2;
+            padding: 10px;
           }
-
+          .current-line {
+            color: #fa2;
+          }
           .alarm-buttons {
             display: none;
           }
@@ -49,231 +48,132 @@
     <body>
       <article>
         <div contenteditable="true" class="code">
-          <div class="initialise">const it = asyncRobot();<br></div>
-          <div class="first-await">await(<span class="initialise first-await">it.next()</span>);</div>
-
+          <div class="line">const it = morningRobot();</div>
+          <div class="line">await(it.next());</div>
           <br>
-          <div>function* asyncRobot() {</div>
-          <div class="start">&nbsp;&nbsp;let snooze = true;</div>
-          <div class="start loop">&nbsp;&nbsp;while (snooze) {</div>
-          <div class="snooze loop-end">&nbsp;&nbsp;&nbsp;&nbsp;snooze = <span class="start yield">yield robot.wakeMeUp();</span></div>
-          <div class="snooze loop-end">&nbsp;&nbsp;&nbsp;&nbsp;if (snooze) {</div>
-          <div class="snooze">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;robot.pause(9);</div>
-          &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-          &nbsp;&nbsp;}<br>
-          <br>
-          <div class="breakfast">&nbsp;&nbsp;yield robot.makeBreakfast();</div>
-          <div class="teeth">&nbsp;&nbsp;yield robot.brushMyTeeth();</div>
-          }<br>
-          <br>
-          function await(it) {<br>
-          <div class="await await-if">&nbsp;&nbsp;if (it.done) {</div>
-          <div class="return">&nbsp;&nbsp;&nbsp;&nbsp;return;</div>
-          &nbsp;&nbsp;}<br>
-          <br>
-          <div class="await promise">
-            &nbsp;&nbsp;it.value<br>.then(<span class="then">response
-            => <span class="call-await">await(</span><span
-                class="call-next">it.next(response)</span><span class="call-await">)</span></span>);</div>
-          }<br>
-        </div>
-          <button class="go" onclick="start()">&gt;</button>
-          <button class="hide" onclick="hide()">X</button>
-        <div contenteditable="false">
-          <img class="robot-video" src="" />
-          <div class="alarm-buttons">
-            <button onclick="snooze()">SNOOZE</button>
-            <button onclick="wakeUp()">WAKE</button>
+          <div id="generator-function">
+            <div>function * morningRobot() {</div>
+            <div class="line">&nbsp;&nbsp;let snooze = yield robot.setAlarm('7:00');</div>
+            <br>    
+            <div class="line">&nbsp;&nbsp;while (snooze) {</div>
+            <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;snooze = yield robot.snooze();</div>
+            <div>&nbsp;&nbsp;}</div>
+            <br>
+            <div class="line">&nbsp;&nbsp;yield robot.makeBreakfast();</div>
+            <div class="line">&nbsp;&nbsp;yield robot.brushMyTeeth();</div>
+            <div>}</div>
           </div>
+          <br>
+          <div>function await(next) {</div>
+          <div class="line">&nbsp;&nbsp;if (next.done) {</div>
+          <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;return;</div>
+          <div>&nbsp;&nbsp;}</div>
+          <div class="line">&nbsp;&nbsp;next.value.then(response => {</div>
+          <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;await(it.next(response))</div>
+          <div>&nbsp;&nbsp;});</div>
+          <div>}</div>
         </div>
       </article>
 
-    <script>
-      const active = 'orange';
-      const passed = 'grey';
-      const waiting = '#34a5da';
+      <script>
+        const lineOrder = [0, 1, 2, 1, 7, 9];
+        window.onload = () => {
+          document.getElementById('generator-function')
+            .addEventListener('click', highlightGenerator, { once: true });
+        };
 
-      let resolve;
+        function highlightGenerator(event) {
+          event.stopPropagation();
+          this.classList.add('highlighted');
 
-      function hide() {
-        Array.from(document.querySelectorAll('.go, .hide')).forEach(button => button.style.display = 'none');
-      }
-
-      document.querySelector('.code').onclick = () => resolve();
-      async function start() {
-        hide();
-
-        const steps = ['.initialise', '.start'];
-        for (const step of steps) {
-          await run(step);
+          this.addEventListener('click', 
+                                function (event) {
+                                  event.stopPropagation(); 
+                                  this.classList.remove('highlighted');
+                                  goLineByLine();
+                                }, 
+                                { once: true });
         }
-        showVideo('wake-up-machine.gif');
-        toggleButtons();
-        make('.yield', waiting);
+      
+        function goLineByLine() {
+          let currentLine = -1;
+          const programLines = document.querySelector('.line');
+          document.querySelector('body').addEventListener('click', nextLine);
 
-        doAwait('.first-await');
-      }
+          function nextLine() {
+            currentLine++;
 
-      async function doAwait(caller) {
-        makeAll(caller, active);
-        await click();
-        makeAll(caller, passed);
+            if (currentLine) {
+              toggleHighlight(currentLine - 1);
+            }
 
-        await run('.await');
-        make('.call-await', active);
-        make('.call-next', active);
+            if (currentLine > lines.length) {
+              document.querySelector('body').removeEventListener('click', nextLine);
+              // set content editable to true
+              return;
+            }
 
-        make('.promise', passed);
-        make('.then', waiting);
+            toggleHighlight(currentLine);
+            comment(currentLine);
 
-      }
-
-      async function snooze() {
-        await restart();
-        await click();
-        make('.call-next', waiting);
-
-        await run('.snooze');
-        makeAll('.snooze', passed);
-        await run('.loop');
-        make('.loop', passed);
-        make('.yield', waiting);
-        showVideo('wake-up-machine.gif');
-        toggleButtons();
-
-        makeAll('.call-await, .call-next', active);
-        await click();
-        makeAll('.call-await, .call-next', passed);
-
-        await run('.await');
-        makeAll('.promise, .then, .call-await, .call-next', active);
-
-        await click();
-        make('.promise', passed);
-        makeAll('.then, .call-await, .call-next', waiting);
-      }
-
-      async function wakeUp() {
-        await restart();
-        await click();
-
-        makeAll('.call-await, .call-next', waiting);
-        await run('.loop-end');
-        makeAll('.loop-end', passed);
-
-        make('.loop.start', active);
-        await click();
-
-        make('.loop.start', passed);
-
-        await run('.breakfast');
-        showVideo('breakfast-machine.gif');
-        make('.breakfast', waiting);
-        await click();
-        makeAll('.call-await, .call-next', active);
-        await click();
-        makeAll('.call-await, .call-next', passed);
-
-        await run('.await');
-        makeAll('.promise, .then, .call-await, .call-next', active);
-        await click();
-        makeAll('.promise, .then, .call-await, .call-next', waiting);
-
-        await click();
-        make('.promise', passed);
-        makeAll('.then, .call-await, .call-next', waiting);
-        restart(false);
-        await click();
-        makeAll('.then', passed);
-        makeAll('.call-await, .call-next', waiting);
-        make('.breakfast', active);
-        await click();
-        make('.breakfast', passed);
-
-        await run('.teeth');
-        showVideo('toothbrush.gif');
-        make('.teeth', waiting);
-
-        makeAll('.call-await, .call-next', active);
-        await click();
-        makeAll('.call-await, .call-next', passed);
-        await run('.await');
-        makeAll('.promise, .then, .call-await, .call-next', active);
-        await click();
-        makeAll('.promise, .then, .call-await, .call-next', waiting);
-
-        await click();
-        makeAll('.promise, .then', passed);
-        await restart(false);
-        makeAll('.call-await, .call-next', active);
-        await click();
-
-        make('.teeth', active);
-        await click();
-
-        make('.teeth', passed);
-        await click();
-
-        makeAll('.call-await, .call-next', active);
-        await click();
-
-        makeAll('.call-await, .call-next', passed);
-        make('.await-if', active);
-        await click();
-        make('.await-if', passed);
-        make('.return', active);
-      }
-
-      async function restart(buttons = true) {
-        showVideo('');
-        if (buttons)
-          toggleButtons();
-        make('.promise', passed);
-        makeAll('.call-await', active);
-        make('.call-next', active);
-      }
-
-      async function run(selector) {
-        const elements = Array.from(document.querySelectorAll(selector));
-        make(elements[0], active);
-        await click();
-
-        for (let i = 0; i < elements.length - 1; i++) {
-          make(elements[i], passed);
-          make(elements[i + 1], active);
-          await click();
+            if (lines[currentLine].action) {
+              lines[currentLine][action]();
+            }
+          }
         }
 
-      }
-
-      const click = () => new Promise(r => resolve = r);
-
-      function showVideo(fileName) {
-        document.querySelector('.robot-video').src = fileName;
-      }
-
-      const select = (selector) => document.querySelector(selector);
-      function make(element, colour) {
-        if (!(element instanceof HTMLElement)) {
-          element = select(element);
+        function toggleHighlight(line) {
+          programLines[line.highlight].classList.toggle('.current-line');
         }
 
-        element.style.color = colour;
-        Array.from(element.children).forEach(child => child.style.color = colour);
-      }
-      function makeAll(element, colour) {
-        Array.from(document.querySelectorAll(element)).forEach(element => element.style.color = colour);
-      }
-
-      function toggleButtons() {
-        const style = document.querySelector('.alarm-buttons').style;
-        if (style.display === 'block') {
-          style.display = 'none';
-        } else {
-          style.display = 'block';
+        function comment(line) {
+          const comment = lines[line].comment;
+          // add after element with comment in
+          // add style so after element only shows if line has .current-line
         }
-      }
 
-    </script>
-    </body>
+        const lines = [
+          { highlight: 0, action: undefined, comment: undefined }
+        ]
+        
+        highlight(0)
+        highlight(1)
+        highlight(2) show(sleeping)
+        highlight(1) comment it.next() = { value: Promise(setAlarm), done: false }
+        highlight(7) comment next = { value: Promise(setAlarm), done: false }
+        highlight(9) comment next = { value: Promise(setAlarm), done: false } 
+        show(wakeUp)
+
+        click snooze
+        highlight(10) comment response = true
+        highlight(2) comment snooze = true
+        highlight(3) comment snooze = true
+        highlight(4) show(sleeping)
+        highlight(10) comment it.next(response) = { value: Promise(snooze), done: false }
+        highlight(7) comment next = { value: Promise(snooze), done: false }
+        highlight(9) comment next = { value: Promise(snooze), done: false }
+        show(wakeUp)
+
+        click wakeUp
+        highlight(10) comment response = false
+        highlight(4) comment snooze = false
+        highlight(3) comment snooze = false
+        highlight(5) show(makeBreakfast)
+        highlight(10) comment it.next(response) = { value: Promise(breakfast), done: false }
+        highlight(7) comment next = { value: Promise(breakfast), done: false }
+        highlight(9) comment next = { value: Promise(breakfast), done: false }
+        hide(makeBreakfast) highlight(10) comment response = undefined
+        highlight(5)
+        highlight(6) show(teeth)
+        highlight(10) comment it.next(response) = { value: Promise(teeth), done: false }
+        highlight(7) comment next = { value: Promise(teeth), done: false }
+        highlight(9) comment next = { value: Promise(teeth), done: false }
+        hide(teeth) highlight(10) comment response = undefined
+        highlight(6)
+        highlight(10) comment it.next(response) = { value: undefined, done: true }
+        highlight(7) comment next = { value: undefined, done: true }
+        highlight(8)
+        unhighlight all the things
+      </script>
+  </body>
 </html>
