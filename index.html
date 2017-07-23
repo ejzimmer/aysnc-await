@@ -4,50 +4,11 @@
         <meta charset="utf-8">
         <title>Async/Await</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-          *:focus {
-            outline: none;
-          }
-
-          body {
-            background-color: #414141;
-            color: white;
-          }
-          article {
-            display: flex;
-            margin: 30px;
-          }
-          .code {
-            font-family: "Courier New", serif;
-            font-weight: bold;
-            flex-shrink: 0;
-          }
-          .highlighted {
-            border: 2px solid #fa2;
-            padding: 10px;
-          }
-          .current-line {
-            color: #fa2;
-          }
-          .alarm-buttons {
-            display: none;
-          }
-
-          .alarm-buttons button {
-            background: none;
-            border: 2px solid currentColor;
-            border-radius: 4px;
-            width: calc(50% - 4px);
-            color: #34a5da;
-            font-size: 22px;
-            padding: 10px;
-            cursor: pointer;
-          }
-        </style>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
       <article>
-        <div contenteditable="true" class="code">
+        <div class="code">
           <div class="line">const it = morningRobot();</div>
           <div class="line">await(it.next());</div>
           <br>
@@ -75,105 +36,7 @@
         </div>
       </article>
 
-      <script>
-        const lineOrder = [0, 1, 2, 1, 7, 9];
-        window.onload = () => {
-          document.getElementById('generator-function')
-            .addEventListener('click', highlightGenerator, { once: true });
-        };
-
-        function highlightGenerator(event) {
-          event.stopPropagation();
-          this.classList.add('highlighted');
-
-          this.addEventListener('click', 
-                                function (event) {
-                                  event.stopPropagation(); 
-                                  this.classList.remove('highlighted');
-                                  goLineByLine();
-                                }, 
-                                { once: true });
-        }
-      
-        function goLineByLine() {
-          let currentLine = -1;
-          const programLines = document.querySelector('.line');
-          document.querySelector('body').addEventListener('click', nextLine);
-
-          function nextLine() {
-            currentLine++;
-
-            if (currentLine) {
-              toggleHighlight(currentLine - 1);
-            }
-
-            if (currentLine > lines.length) {
-              document.querySelector('body').removeEventListener('click', nextLine);
-              // set content editable to true
-              return;
-            }
-
-            toggleHighlight(currentLine);
-            comment(currentLine);
-
-            if (lines[currentLine].action) {
-              lines[currentLine][action]();
-            }
-          }
-        }
-
-        function toggleHighlight(line) {
-          programLines[line.highlight].classList.toggle('.current-line');
-        }
-
-        function comment(line) {
-          const comment = lines[line].comment;
-          // add after element with comment in
-          // add style so after element only shows if line has .current-line
-        }
-
-        const lines = [
-          { highlight: 0, action: undefined, comment: undefined }
-        ]
-        
-        highlight(0)
-        highlight(1)
-        highlight(2) show(sleeping)
-        highlight(1) comment it.next() = { value: Promise(setAlarm), done: false }
-        highlight(7) comment next = { value: Promise(setAlarm), done: false }
-        highlight(9) comment next = { value: Promise(setAlarm), done: false } 
-        show(wakeUp)
-
-        click snooze
-        highlight(10) comment response = true
-        highlight(2) comment snooze = true
-        highlight(3) comment snooze = true
-        highlight(4) show(sleeping)
-        highlight(10) comment it.next(response) = { value: Promise(snooze), done: false }
-        highlight(7) comment next = { value: Promise(snooze), done: false }
-        highlight(9) comment next = { value: Promise(snooze), done: false }
-        show(wakeUp)
-
-        click wakeUp
-        highlight(10) comment response = false
-        highlight(4) comment snooze = false
-        highlight(3) comment snooze = false
-        highlight(5) show(makeBreakfast)
-        highlight(10) comment it.next(response) = { value: Promise(breakfast), done: false }
-        highlight(7) comment next = { value: Promise(breakfast), done: false }
-        highlight(9) comment next = { value: Promise(breakfast), done: false }
-        hide(makeBreakfast) highlight(10) comment response = undefined
-        highlight(5)
-        highlight(6) show(teeth)
-        highlight(10) comment it.next(response) = { value: Promise(teeth), done: false }
-        highlight(7) comment next = { value: Promise(teeth), done: false }
-        highlight(9) comment next = { value: Promise(teeth), done: false }
-        hide(teeth) highlight(10) comment response = undefined
-        highlight(6)
-        highlight(10) comment it.next(response) = { value: undefined, done: true }
-        highlight(7) comment next = { value: undefined, done: true }
-        highlight(8)
-        unhighlight all the things
-      </script>
+      <div id="pictures"></div>
+      <script src="index.js"></script>
   </body>
 </html>

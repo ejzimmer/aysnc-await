@@ -1,0 +1,52 @@
+*:focus {
+  outline: none;
+}
+
+body {
+  background-color: #414141;
+  color: white;
+  display: flex;
+  height: 100vh;
+  margin: 0;
+}
+article {
+  display: flex;
+  padding: 30px;
+  width: 100vh;
+  justify-content: space-between;
+}
+
+.code {
+  font-family: "Courier New", serif;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.highlighted {
+  border: 2px solid #fa2;
+  padding: 10px;
+  margin: -12px;
+}
+.current-line {
+  color: #fa2;
+}
+.comment {
+  color: #6df;
+  margin-left: 10px;
+}
+
+#pictures {
+  align-self: flex-end;
+  max-width: 50%;
+  padding: 20px;
+}
+
+.alarm-button {
+  background: none;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  width: calc(50% - 4px);
+  color: #34a5da;
+  font-size: 22px;
+  padding: 10px;
+  cursor: pointer;
+}
