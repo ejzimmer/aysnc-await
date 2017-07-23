@@ -68,7 +68,12 @@ function hideComment(line) {
 }
 
 function sleep() {
-  document.getElementById('pictures').innerHTML = '💤';
+  document.getElementById('pictures').innerHTML = `        
+    <div class="sleeping">
+      <div class="z">Z</div>
+      <div class="z">Z</div>
+      <div class="z">Z</div>
+    </div>`;
 }
 
 function alarm() {
