@@ -78,9 +78,14 @@ article {
     left: 0;
     top: 0;
   }
+  75% {
+    opacity: 1;
+  }
   100% {
     font-size: 5em;
     left: .75em;
     top: -1em;
+    opacity: 0;
+    text-shadow: 2px 2px 5px;
   }
 }
