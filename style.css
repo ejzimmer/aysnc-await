@@ -35,8 +35,8 @@ article {
 }
 
 #pictures {
-  align-self: flex-end;
-  max-width: 50%;
+  align-self: flex-start;
+  max-width: 40%;
   padding: 20px;
 }
 
@@ -53,8 +53,7 @@ article {
 
 .sleeping {
   position: relative;
-  right: 100px;
-  bottom: 100px;
+  top: 100px;
 }
 .z {
   font-size: 0;
