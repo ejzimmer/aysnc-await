@@ -102,9 +102,16 @@ function makeEditable() {
   document.querySelector('article').contentEditable = true;
 }
 
+let snoozed;
 function snooze() {
   document.getElementById('pictures').innerHTML = '';
-  goLineByLine(snoozeActions);
+  if (!snoozed) {
+    snoozed = true;
+    goLineByLine(snoozeActions);
+  } else {
+      goLineByLine(snoozeNextActions);
+  }
+
 }
 
 function wakeUp() {
@@ -126,6 +133,17 @@ const startActions = [
 const snoozeActions = [
   { line: 10, comment: 'response = true' },
   { line: 2, comment: 'snooze = true' },
+  { line: 3, comment: 'snooze = true' },
+  { line: 4, action: sleep },
+  { line: 10, comment: 'it.next(response) = { value: snoozePromise, done: false }' },
+  { line: 7, comment: 'next = { value: snoozePromise, done: false }' },
+  { line: 9, comment: 'next = { value: snoozePromise, done: false }' },
+  { line: 9, action: alarm },
+];
+
+const snoozeNextActions = [
+  { line: 10, comment: 'response = true' },
+  { line: 4, comment: 'snooze = true', action: sleep },
   { line: 3, comment: 'snooze = true' },
   { line: 4, action: sleep },
   { line: 10, comment: 'it.next(response) = { value: snoozePromise, done: false }' },

@@ -19,6 +19,7 @@ article {
 .code {
   font-family: "Courier New", serif;
   font-weight: bold;
+  font-size: 2em;
   flex-shrink: 0;
 }
 .highlighted {
